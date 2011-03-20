@@ -1,0 +1,29 @@
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
+
+  sourceCompatibility = 1.6
+
+  repositories {
+    mavenCentral()
+  }
+  
+  configurations {
+    gwt
+    providedDependencies
+  }
+  
+  sourceSets {
+    //TODO(pruggia): http://jira.codehaus.org/browse/GRADLE-784
+    main { compileClasspath += configurations.providedDependencies }
+    test { compileClasspath += configurations.providedDependencies }
+  }
+
+  dependencies {
+    gwt 'com.google.gwt:gwt-user:2.2.0'
+    gwt 'com.google.gwt:gwt-dev:2.2.0'
+    testCompile 'junit:junit:4.7'
+  }
+
+  version = '1.0-SNAPSHOT'
+}

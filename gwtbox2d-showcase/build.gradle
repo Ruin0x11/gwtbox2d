@@ -1,0 +1,34 @@
+apply plugin: 'war'
+
+configurations.providedDependencies.extendsFrom configurations.gwt
+dependencies {
+	compile project(':gwtbox2d-core')
+}
+
+eclipseProject.buildCommand 'com.google.gwt.eclipse.core.gwtProjectValidator'
+eclipseProject.natures 'com.google.gwt.eclipse.core.gwtNature'
+eclipseClasspath.containers 'com.google.gwt.eclipse.core.GWT_CONTAINER'
+eclipseClasspath.minusConfigurations=[configurations.gwt]
+
+gwtBuildDir = 'build/gwt'
+task gwtCompile << {
+  created = (new File(gwtBuildDir)).mkdirs()
+  ant.java(classname:'com.google.gwt.dev.Compiler', failOnError: 'true', fork: 'true') {
+    jvmarg(value: '-Xmx256M')
+    arg(line: '-war ' + gwtBuildDir)
+    arg(line: '-logLevel INFO')
+    arg(line: '-style PRETTY')
+    arg(value: 'org.jbox2d.gwt.showcase.GwtBox2DShowcase')
+    classpath {
+      pathElement(location: 'src/main/java')
+      pathElement(location: 'src/main/resources')
+      pathElement(path: configurations.compile.asPath)
+      pathElement(path: configurations.gwt.asPath)
+    }
+  }
+}
+
+war {
+  dependsOn gwtCompile
+  from gwtBuildDir
+}
